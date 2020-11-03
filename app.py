@@ -24,6 +24,8 @@ pokemon_df = pokemon_df.melt(id_vars=['#', 'Name', 'Type 1', 'Type 2', 'Generati
 
 app = dash.Dash("Pokemon Stats", external_stylesheets=[dbc.themes.SLATE])
 
+server = app.server
+
 app.layout = dbc.Container([
     dbc.Row([
 
