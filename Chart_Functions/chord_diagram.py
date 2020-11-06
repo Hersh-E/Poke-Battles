@@ -273,7 +273,7 @@ def poke_chord_diagram(graphable):
         return inv
 
 
-    radii_sribb=0.4# these value are set after a few trials
+    radii_sribb=0.42# these value are set after a few trials
 
 
     row_sum=[np.mean(matrix[k,:]) for k in range(L)]
@@ -363,9 +363,9 @@ def poke_chord_diagram(graphable):
 
         layout_shapes.append(make_ideo_shape(path,'rgb(150,150,150)' , ideo_colors[k]))
 
-    layout=make_layout('Chord diagram', 400, layout_shapes)
+    layout=make_layout('Win Percentages', 400, layout_shapes)
 
-    data = go.Data(ideograms+ribbon_info)
+    data = ideograms+ribbon_info
     fig = go.Figure(data=data, layout=layout)
 
     return fig

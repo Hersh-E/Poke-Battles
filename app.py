@@ -41,53 +41,60 @@ combats_df.loc[combats_df['wins']==True]
 
 app = dash.Dash("Pokemon Stats", external_stylesheets=[dbc.themes.SLATE])
 
-server = app.server
+# server = app.server
+
+control1 = dbc.Card([
+    dbc.FormGroup([
+        dbc.Label("Select a stat to compare the generations"),
+        dcc.Dropdown(
+            id = 'selected_stat',
+            options=[{'label':i, 'value':i} for i in ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']],
+            value='HP',
+        ),
+    ]),
+], body=True)
+
+control2 = dbc.Card([
+    dbc.FormGroup([
+        dbc.Label("Select generations to compare battles"),
+        dbc.Checklist(
+            id = 'selected_gens',
+            options=[{'label':'Generation ' + str(i), 'value':i} for i in [1, 2, 3, 4, 5, 6]],
+            value=[1,2],
+        ),
+        dbc.Label("** select a chord or slice to see win percentages"),
+    ]),
+], body=True)
 
 app.layout = dbc.Container([
     dbc.Row([
 
         dbc.Col([
-            html.H3("Select a stat to compare the generations"),
-            dcc.Dropdown(
-                id = 'selected_stat',
-                options=[{'label':i, 'value':i} for i in ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']],
-                value='HP'
-            ),
-        ], md='auto'),
+            control1,
+        ], md='3'),
 
         dbc.Col([
             dcc.Graph(
                 id='SwarmPlot',
+                style={"margin": "15px"},
             ),
-        ], md='auto'),
+        ], md='9'),
 
-        # dbc.Col([
-        #
-        # ], md='2'),
-
-    ]),
+    ], align='center'),
     dbc.Row([
 
         dbc.Col([
-            html.H3("Select generations to compare battles"),
-            dcc.Checklist(
-                id = 'selected_gens',
-                options=[{'label':i, 'value':i} for i in [1, 2, 3, 4, 5, 6]],
-                value=[1,2]
-            ),
-        ], md='auto'),
+            control2,
+        ], md='3'),
 
         dbc.Col([
             dcc.Graph(
                 id='chord_diagram',
+                style={"margin": "15px"},
             ),
-        ], md='auto'),
+        ], md='9'),
 
-        # dbc.Col([
-        #
-        # ], md='2'),
-
-    ]),
+    ], align='center'),
 ], fluid=True)
 
 @app.callback(
@@ -96,7 +103,14 @@ app.layout = dbc.Container([
 )
 def update_violinplot(stat):
 
-    return px.violin(pokemon_df, y=stat, color='Generation', box=True, points='all', hover_data=['Name', 'Type 1', 'Type 2', 'Generation', 'Legendary'])
+    fig = px.violin(pokemon_df, y=stat, color='Generation', box=True, points='all', hover_data=['Name', 'Type 1', 'Type 2', 'Generation', 'Legendary'])
+    fig.update_layout(
+        autosize=False,
+        width=900,
+        height=500,
+        dragmode=False)
+    return fig
+
 
 @app.callback(
     Output('chord_diagram', 'figure'),
@@ -111,9 +125,16 @@ def update_chordplot(gens):
 
     graphable = pd.pivot_table(combat_outcomes, values='win_pct', index=['First_Type'], columns=['Second_Type'], fill_value=0)
 
+    fig = poke_chord_diagram(graphable)
 
-    return poke_chord_diagram(graphable)
+    fig.update_layout(
+        autosize=False,
+        width=600,
+        height=600,
+        dragmode=False)
+
+    return fig
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True, processes=1, threaded=True, host='127.0.01',port=8050, use_reloader=False)
