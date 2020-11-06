@@ -41,7 +41,7 @@ combats_df.loc[combats_df['wins']==True]
 
 app = dash.Dash("Pokemon Stats", external_stylesheets=[dbc.themes.SLATE])
 
-# server = app.server
+server = app.server
 
 control1 = dbc.Card([
     dbc.FormGroup([
@@ -137,4 +137,5 @@ def update_chordplot(gens):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, processes=1, threaded=True, host='127.0.01',port=8050, use_reloader=False)
+    # app.run_server(debug=True, processes=1, threaded=True, host='127.0.01',port=8050, use_reloader=False)
+    app.run_server
